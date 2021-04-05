@@ -23,7 +23,12 @@ use MF\Controller\Action;
 			$tweet = Container::getModel("Tweet");
 
 			$tweet->__set("id_usuario", $_SESSION["id"]);
-			$tweets = $tweet->getAll();
+
+			$limit = 5;
+			$pagina = isset($_GET["pagina"]) ? $_GET["pagina"] : 1;
+			$offset = ($pagina * $limit) - 5;
+
+			$tweets = $tweet->getPorPagina($limit, $offset);
 
 			$usuario = Container::getModel("usuario");
 			$usuario->__set("id", $_SESSION["id"]);
@@ -31,7 +36,8 @@ use MF\Controller\Action;
 
 			$this->view->tweets = $tweets;
 			$this->view->perfil = $perfil;
-
+			$this->view->qtd_paginas = ceil($perfil['tweets'] / $limit);
+			$this->view->pagina_atual = $pagina;
 			$this->render("timeline", "layout");
             
 		}

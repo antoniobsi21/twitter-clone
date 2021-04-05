@@ -50,6 +50,32 @@
 
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }
+
+        public function getPorPagina($limit, $offset) {
+            $query = "SELECT
+                t.id, t.id_usuario, u.nome, t.tweet, DATE_FORMAT(t.data, '%d/%m/%y %H:%i') as data
+            FROM
+                tweet as t
+            LEFT JOIN
+                usuario as u
+            ON
+                (t.id_usuario = u.id)
+            WHERE
+                id_usuario = :id_usuario
+                OR t.id_usuario in (SELECT seguido FROM seguidor WHERE seguidor = :id_usuario)
+            ORDER BY
+                t.data DESC
+            LIMIT
+                $limit
+            OFFSET
+                $offset";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(":id_usuario", $this->__get("id_usuario"));
+            $stmt->execute();
+
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        }
         
         public function getTweetById() {
             $query = "SELECT * FROM tweet WHERE id = :id";

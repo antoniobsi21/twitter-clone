@@ -10,6 +10,11 @@
 		public function index() {
 			$this->view->login = isset($_GET["login"]) ? $_GET["login"] : "";
 
+			session_start();
+			if(!empty($_SESSION["id"]) && !empty($_SESSION["nome"])) {
+				header("Location: /timeline");
+			}
+
 			$this->render("index", "layout");
 		}
 
